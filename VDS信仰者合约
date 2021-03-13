@@ -1,33 +1,32 @@
 pragma solidity >=0.4.22 <0.6.0;
 
-contract VDSPAY {
-    using SafeMath for uint256;//计算防溢出 
+contract VDSTimeCapsule {
+    using SafeMath for uint256;
     
 
-    address public owner;//合约拥有者带有public都可以通过调取方法查看内容
-    address payable public gasAddressO;//第一个gas获取地址
-    address payable public gasAddressT;//第二个gas获取地址
-    address payable public gasAddressS;//第三个gas获取地址
-    uint256 public gameTime = 1 days;//限制时间
-    uint256 public gameFee = 5;//手续费 5%
-    uint256 public gameValue = 200000;//提取金额 0.0002
+    address public owner;
+    address payable public gasAddressO;
+    address payable public gasAddressT;
+    address payable public gasAddressS;
+    uint256 public gameTime = 1 days;
+    uint256 public gameFee = 5;// 
+    uint256 public gameValue = 200000;
 
-    uint256 public gameMin = 100000000;//最低加入金额
+    uint256 public gameMin = 100000000;
 	
-	address public contractAddress; 定义合约变量
-	mapping (address => userValue) public userValues;//用户对应数据
-	//定义一个用户数组
+	address public contractAddress; 
+	mapping (address => userValue) public userValues;
+	// 
 	struct userValue{
-	    uint256 value;  //金额
-	    uint256 time;    //时间
-	    bool isOn;   //是否存入
+	    uint256 value; 
+	    uint256 time;    
+	    bool isOn;   
 	}
 	
 	modifier onlyOwner() {
-        require(msg.sender == owner);  //只有合约拥有者才可以调用设置方法
-        _;
+        require(msg.sender == owner);
+        _
     }
-//构造函数
     constructor() public {
         owner = msg.sender;
         gasAddressO = msg.sender; 
@@ -35,23 +34,22 @@ contract VDSPAY {
         gasAddressS = msg.sender;
     }
   
-//内置payable方法 给合约转VDS即触发
+
     function () payable external {
-        require(msg.value!=0);  //判断发送的金额是否等于0   
-         如果发送的金额等于设置的提取金额并且合约的存入时间加上合约设置的取出天数小于等于当前时间，并且用户的发送者信息不为空 
+        require(msg.value!=0); 
         if(msg.value==gameValue&&uint256(now)>=(userValues[msg.sender].time.add(gameTime))&&userValues[msg.sender].value!=0){
-            gasAddressO.transfer(msg.value);  触发转账方法 
+            gasAddressO.transfer(msg.value);  
             userValues[msg.sender].isOn=false; 
             msg.sender.transfer(userValues[msg.sender].value);
             userValues[msg.sender].value=0;
-        }else if(msg.value>=gameMin){//如果发送的金额大于合约的最低加入金额
-            uint256 gas = msg.value.mul(gameFee).div(100);//触发存入方法
-            gasAddressO.transfer(gas.mul(40).div(100)); //设置的手续费地址转入手续费
+        }else if(msg.value>=gameMin){
+            uint256 gas = msg.value.mul(gameFee).div(100);
+            gasAddressO.transfer(gas.mul(40).div(100));
             gasAddressT.transfer(gas.mul(40).div(100));
             gasAddressS.transfer(gas.mul(20).div(100));
             userValues[msg.sender].value = userValues[msg.sender].value.add(msg.value.sub(gas));
             if(userValues[msg.sender].isOn==false){
-                userValues[msg.sender].time = now;       存入用户数组的存入时间和是否存入  
+                userValues[msg.sender].time = now;     
                 userValues[msg.sender].isOn=true;
             }
         }else{
@@ -59,27 +57,23 @@ contract VDSPAY {
         }
     }
     
-//设置三个手续费获取地址 只有拥有者可以设置
     function settingAddress(address payable addr1_,address payable addr2_,address payable addr3_) public onlyOwner returns(bool){
-        require(addr1_ != address(0));//设置合约手续费的地址
+        require(addr1_ != address(0));
         require(addr2_ != address(0));
         require(addr3_ != address(0));
-        gasAddressO = addr1_;  //定义的变量赋值
+        gasAddressO = addr1_;  
         gasAddressT = addr2_;
         gasAddressS = addr3_;
         return true;
     }
     
     function setContractAddress(address _addr) onlyOwner public{
-       //将定义的变量赋值
         contractAddress = _addr;
     }
     
 
-    
-//获取当前合约余额
 function getBalance() public view returns(uint){
-      return contractAddress.balance;  返回变量的余额
+      return contractAddress.balance;  
     }
 }
     
