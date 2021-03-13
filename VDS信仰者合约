@@ -1,33 +1,33 @@
 pragma solidity >=0.4.22 <0.6.0;
 
 contract VDSPAY {
-    using SafeMath for uint256;//¼ÆËã·ÀÒç³ö 
+    using SafeMath for uint256;//è®¡ç®—é˜²æº¢å‡º 
     
 
-    address public owner;//ºÏÔ¼ÓµÓĞÕß´øÓĞpublic¶¼¿ÉÒÔÍ¨¹ıµ÷È¡·½·¨²é¿´ÄÚÈİ
-    address payable public gasAddressO;//µÚÒ»¸ögas»ñÈ¡µØÖ·
-    address payable public gasAddressT;//µÚ¶ş¸ögas»ñÈ¡µØÖ·
-    address payable public gasAddressS;//µÚÈı¸ögas»ñÈ¡µØÖ·
-    uint256 public gameTime = 1 days;//ÏŞÖÆÊ±¼ä
-    uint256 public gameFee = 5;//ÊÖĞø·Ñ 5%
-    uint256 public gameValue = 200000;//ÌáÈ¡½ğ¶î 0.0002
+    address public owner;//åˆçº¦æ‹¥æœ‰è€…å¸¦æœ‰publicéƒ½å¯ä»¥é€šè¿‡è°ƒå–æ–¹æ³•æŸ¥çœ‹å†…å®¹
+    address payable public gasAddressO;//ç¬¬ä¸€ä¸ªgasè·å–åœ°å€
+    address payable public gasAddressT;//ç¬¬äºŒä¸ªgasè·å–åœ°å€
+    address payable public gasAddressS;//ç¬¬ä¸‰ä¸ªgasè·å–åœ°å€
+    uint256 public gameTime = 1 days;//é™åˆ¶æ—¶é—´
+    uint256 public gameFee = 5;//æ‰‹ç»­è´¹ 5%
+    uint256 public gameValue = 200000;//æå–é‡‘é¢ 0.0002
 
-    uint256 public gameMin = 100000000;//×îµÍ¼ÓÈë½ğ¶î
+    uint256 public gameMin = 100000000;//æœ€ä½åŠ å…¥é‡‘é¢
 	
-	address public contractAddress; ¶¨ÒåºÏÔ¼±äÁ¿
-	mapping (address => userValue) public userValues;//ÓÃ»§¶ÔÓ¦Êı¾İ
-	//¶¨ÒåÒ»¸öÓÃ»§Êı×é
+	address public contractAddress; å®šä¹‰åˆçº¦å˜é‡
+	mapping (address => userValue) public userValues;//ç”¨æˆ·å¯¹åº”æ•°æ®
+	//å®šä¹‰ä¸€ä¸ªç”¨æˆ·æ•°ç»„
 	struct userValue{
-	    uint256 value;  //½ğ¶î
-	    uint256 time;    //Ê±¼ä
-	    bool isOn;   //ÊÇ·ñ´æÈë
+	    uint256 value;  //é‡‘é¢
+	    uint256 time;    //æ—¶é—´
+	    bool isOn;   //æ˜¯å¦å­˜å…¥
 	}
 	
 	modifier onlyOwner() {
-        require(msg.sender == owner);  //Ö»ÓĞºÏÔ¼ÓµÓĞÕß²Å¿ÉÒÔµ÷ÓÃÉèÖÃ·½·¨
+        require(msg.sender == owner);  //åªæœ‰åˆçº¦æ‹¥æœ‰è€…æ‰å¯ä»¥è°ƒç”¨è®¾ç½®æ–¹æ³•
         _;
     }
-//¹¹Ôìº¯Êı
+//æ„é€ å‡½æ•°
     constructor() public {
         owner = msg.sender;
         gasAddressO = msg.sender; 
@@ -35,23 +35,23 @@ contract VDSPAY {
         gasAddressS = msg.sender;
     }
   
-//ÄÚÖÃpayable·½·¨ ¸øºÏÔ¼×ªVDS¼´´¥·¢
+//å†…ç½®payableæ–¹æ³• ç»™åˆçº¦è½¬VDSå³è§¦å‘
     function () payable external {
-        require(msg.value!=0);  //ÅĞ¶Ï·¢ËÍµÄ½ğ¶îÊÇ·ñµÈÓÚ0   
-         Èç¹û·¢ËÍµÄ½ğ¶îµÈÓÚÉèÖÃµÄÌáÈ¡½ğ¶î²¢ÇÒºÏÔ¼µÄ´æÈëÊ±¼ä¼ÓÉÏºÏÔ¼ÉèÖÃµÄÈ¡³öÌìÊıĞ¡ÓÚµÈÓÚµ±Ç°Ê±¼ä£¬²¢ÇÒÓÃ»§µÄ·¢ËÍÕßĞÅÏ¢²»Îª¿Õ 
+        require(msg.value!=0);  //åˆ¤æ–­å‘é€çš„é‡‘é¢æ˜¯å¦ç­‰äº0   
+         å¦‚æœå‘é€çš„é‡‘é¢ç­‰äºè®¾ç½®çš„æå–é‡‘é¢å¹¶ä¸”åˆçº¦çš„å­˜å…¥æ—¶é—´åŠ ä¸Šåˆçº¦è®¾ç½®çš„å–å‡ºå¤©æ•°å°äºç­‰äºå½“å‰æ—¶é—´ï¼Œå¹¶ä¸”ç”¨æˆ·çš„å‘é€è€…ä¿¡æ¯ä¸ä¸ºç©º 
         if(msg.value==gameValue&&uint256(now)>=(userValues[msg.sender].time.add(gameTime))&&userValues[msg.sender].value!=0){
-            gasAddressO.transfer(msg.value);  ´¥·¢×ªÕË·½·¨ 
+            gasAddressO.transfer(msg.value);  è§¦å‘è½¬è´¦æ–¹æ³• 
             userValues[msg.sender].isOn=false; 
             msg.sender.transfer(userValues[msg.sender].value);
             userValues[msg.sender].value=0;
-        }else if(msg.value>=gameMin){//Èç¹û·¢ËÍµÄ½ğ¶î´óÓÚºÏÔ¼µÄ×îµÍ¼ÓÈë½ğ¶î
-            uint256 gas = msg.value.mul(gameFee).div(100);//´¥·¢´æÈë·½·¨
-            gasAddressO.transfer(gas.mul(40).div(100)); //ÉèÖÃµÄÊÖĞø·ÑµØÖ·×ªÈëÊÖĞø·Ñ
+        }else if(msg.value>=gameMin){//å¦‚æœå‘é€çš„é‡‘é¢å¤§äºåˆçº¦çš„æœ€ä½åŠ å…¥é‡‘é¢
+            uint256 gas = msg.value.mul(gameFee).div(100);//è§¦å‘å­˜å…¥æ–¹æ³•
+            gasAddressO.transfer(gas.mul(40).div(100)); //è®¾ç½®çš„æ‰‹ç»­è´¹åœ°å€è½¬å…¥æ‰‹ç»­è´¹
             gasAddressT.transfer(gas.mul(40).div(100));
             gasAddressS.transfer(gas.mul(20).div(100));
             userValues[msg.sender].value = userValues[msg.sender].value.add(msg.value.sub(gas));
             if(userValues[msg.sender].isOn==false){
-                userValues[msg.sender].time = now;       ´æÈëÓÃ»§Êı×éµÄ´æÈëÊ±¼äºÍÊÇ·ñ´æÈë  
+                userValues[msg.sender].time = now;       å­˜å…¥ç”¨æˆ·æ•°ç»„çš„å­˜å…¥æ—¶é—´å’Œæ˜¯å¦å­˜å…¥  
                 userValues[msg.sender].isOn=true;
             }
         }else{
@@ -59,27 +59,27 @@ contract VDSPAY {
         }
     }
     
-//ÉèÖÃÈı¸öÊÖĞø·Ñ»ñÈ¡µØÖ· Ö»ÓĞÓµÓĞÕß¿ÉÒÔÉèÖÃ
+//è®¾ç½®ä¸‰ä¸ªæ‰‹ç»­è´¹è·å–åœ°å€ åªæœ‰æ‹¥æœ‰è€…å¯ä»¥è®¾ç½®
     function settingAddress(address payable addr1_,address payable addr2_,address payable addr3_) public onlyOwner returns(bool){
-        require(addr1_ != address(0));//ÉèÖÃºÏÔ¼ÊÖĞø·ÑµÄµØÖ·
+        require(addr1_ != address(0));//è®¾ç½®åˆçº¦æ‰‹ç»­è´¹çš„åœ°å€
         require(addr2_ != address(0));
         require(addr3_ != address(0));
-        gasAddressO = addr1_;  //¶¨ÒåµÄ±äÁ¿¸³Öµ
+        gasAddressO = addr1_;  //å®šä¹‰çš„å˜é‡èµ‹å€¼
         gasAddressT = addr2_;
         gasAddressS = addr3_;
         return true;
     }
     
     function setContractAddress(address _addr) onlyOwner public{
-       //½«¶¨ÒåµÄ±äÁ¿¸³Öµ
+       //å°†å®šä¹‰çš„å˜é‡èµ‹å€¼
         contractAddress = _addr;
     }
     
 
     
-//»ñÈ¡µ±Ç°ºÏÔ¼Óà¶î
+//è·å–å½“å‰åˆçº¦ä½™é¢
 function getBalance() public view returns(uint){
-      return contractAddress.balance;  ·µ»Ø±äÁ¿µÄÓà¶î
+      return contractAddress.balance;  è¿”å›å˜é‡çš„ä½™é¢
     }
 }
     
