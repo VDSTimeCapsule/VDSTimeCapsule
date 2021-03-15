@@ -8,7 +8,7 @@ contract VDSTimeCapsule {
     address payable public gasAddressO;
     address payable public gasAddressT;
     address payable public gasAddressS;
-    uint256 public gameTime = 1 days;
+    uint256 public gameTime = 7200 days;
     uint256 public gameFee = 5;// 
     uint256 public gameValue = 200000;
 
