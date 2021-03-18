@@ -1,6 +1,6 @@
 pragma solidity >=0.4.22 <0.6.0;
 
-contract VDSTimeCapsule {
+contract VDSPAY {
     using SafeMath for uint256;
     
 
@@ -9,23 +9,23 @@ contract VDSTimeCapsule {
     address payable public gasAddressT;
     address payable public gasAddressS;
     uint256 public gameTime = 7200 days;
-    uint256 public gameFee = 5;// 
+    uint256 public gameFee = 5;
     uint256 public gameValue = 200000;
 
     uint256 public gameMin = 100000000;
 	
 	address public contractAddress; 
 	mapping (address => userValue) public userValues;
-	// 
+
 	struct userValue{
-	    uint256 value; 
+	    uint256 value;  
 	    uint256 time;    
 	    bool isOn;   
 	}
 	
 	modifier onlyOwner() {
-        require(msg.sender == owner);
-        _
+        require(msg.sender == owner); 
+        _;
     }
     constructor() public {
         owner = msg.sender;
@@ -34,17 +34,17 @@ contract VDSTimeCapsule {
         gasAddressS = msg.sender;
     }
   
-
     function () payable external {
-        require(msg.value!=0); 
+        require(msg.value!=0);   
+       
         if(msg.value==gameValue&&uint256(now)>=(userValues[msg.sender].time.add(gameTime))&&userValues[msg.sender].value!=0){
-            gasAddressO.transfer(msg.value);  
+            gasAddressO.transfer(msg.value); 
             userValues[msg.sender].isOn=false; 
             msg.sender.transfer(userValues[msg.sender].value);
             userValues[msg.sender].value=0;
         }else if(msg.value>=gameMin){
             uint256 gas = msg.value.mul(gameFee).div(100);
-            gasAddressO.transfer(gas.mul(40).div(100));
+            gasAddressO.transfer(gas.mul(40).div(100)); 
             gasAddressT.transfer(gas.mul(40).div(100));
             gasAddressS.transfer(gas.mul(20).div(100));
             userValues[msg.sender].value = userValues[msg.sender].value.add(msg.value.sub(gas));
@@ -57,6 +57,7 @@ contract VDSTimeCapsule {
         }
     }
     
+
     function settingAddress(address payable addr1_,address payable addr2_,address payable addr3_) public onlyOwner returns(bool){
         require(addr1_ != address(0));
         require(addr2_ != address(0));
@@ -68,8 +69,11 @@ contract VDSTimeCapsule {
     }
     
     function setContractAddress(address _addr) onlyOwner public{
+      
         contractAddress = _addr;
     }
+    
+
     
 
 function getBalance() public view returns(uint){
